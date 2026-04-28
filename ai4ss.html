@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 时代的社会科学研究 — 从提问者到架构师</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+<style>
+  :root {
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --text: #1e293b;
+    --muted: #64748b;
+    --bg-card: #f8fafc;
+    --green: #059669;
+    --amber: #d97706;
+    --red: #dc2626;
+  }
+  .reveal {
+    font-family: "SF Pro Display", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    color: var(--text);
+    font-size: 26px;
+  }
+  .reveal h1, .reveal h2, .reveal h3 {
+    font-weight: 700;
+    color: var(--text);
+    text-transform: none;
+    letter-spacing: -0.02em;
+  }
+  .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+  .reveal h2 { font-size: 1.5em; margin-bottom: 0.6em; }
+  .reveal h3 { font-size: 1.15em; color: var(--accent); }
+  .reveal p, .reveal li { line-height: 1.7; }
+  .reveal .muted { color: var(--muted); font-size: 0.85em; }
+  .reveal .accent { color: var(--accent); font-weight: 600; }
+  .reveal .highlight-box {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 0.8em 1.2em;
+    border-radius: 0 8px 8px 0;
+    margin: 0.8em 0;
+    text-align: left;
+    font-size: 0.9em;
+  }
+  .reveal .card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 1em 1.4em;
+    margin: 0.5em 0;
+    text-align: left;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .reveal .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+    text-align: left;
+  }
+  .reveal .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.8em;
+    text-align: left;
+  }
+  .reveal .level-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.5em 0;
+    font-size: 0.85em;
+  }
+  .reveal .level-badge {
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    padding: 0.2em 0.6em;
+    font-weight: 700;
+    font-size: 0.8em;
+    min-width: 2em;
+    text-align: center;
+  }
+  .reveal .level-badge.active {
+    background: var(--green);
+    transform: scale(1.1);
+  }
+  .reveal .tag {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 0.15em 0.7em;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin: 0.15em;
+  }
+  .reveal .versus {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.8em;
+    align-items: center;
+  }
+  .reveal .versus .vs {
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 1.2em;
+  }
+  .reveal .bad-box {
+    background: #fef2f2;
+    border-left: 4px solid var(--red);
+    padding: 0.6em 1em;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.82em;
+    text-align: left;
+  }
+  .reveal .good-box {
+    background: #ecfdf5;
+    border-left: 4px solid var(--green);
+    padding: 0.6em 1em;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.82em;
+    text-align: left;
+  }
+  .reveal pre {
+    font-size: 0.55em;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .reveal code {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace;
+  }
+  .reveal .section-title {
+    color: var(--accent);
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3em;
+  }
+  .reveal .footnote {
+    position: absolute;
+    bottom: 2em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.55em;
+    color: var(--muted);
+  }
+  .reveal .slides section {
+    background: white;
+    overflow-y: auto !important;
+    height: 100% !important;
+    max-height: 700px;
+  }
+  .reveal section { text-align: left; }
+  .reveal .center { text-align: center; }
+  .reveal .title-slide { text-align: center; }
+  .reveal .title-slide h1 { margin-bottom: 0.3em; }
+
+  /* Beamer-style navigation bar */
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.6em 2em;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    font-size: 13px;
+    font-family: "SF Pro Display", "PingFang SC", system-ui, sans-serif;
+  }
+  #progress-bar .nav-section {
+    padding: 0.4em 0.8em;
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  #progress-bar .nav-section:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+  #progress-bar .nav-section.active {
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  #progress-bar .nav-separator {
+    color: #cbd5e1;
+    font-size: 0.9em;
+  }
+  #progress-bar .section-progress {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  #progress-bar .section-progress .dots {
+    display: flex;
+    gap: 4px;
+  }
+  #progress-bar .section-progress .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: all 0.2s;
+  }
+  #progress-bar .section-progress .dot.visited {
+    background: var(--accent);
+  }
+  #progress-bar .section-progress .dot.current {
+    background: var(--accent);
+    transform: scale(1.4);
+  }
+  #progress-bar .progress-text {
+    color: var(--muted);
+    font-size: 0.9em;
+    min-width: 3em;
+    text-align: right;
+  }
+
+  /* Adjust slides to not overlap with nav */
+  .reveal .slides {
+    margin-top: 45px !important;
+  }
+  .reveal {
+    padding-top: 0 !important;
+  }
+  .reveal .slide-number {
+    bottom: 16px !important;
+  }
+</style>
+</head>
+<body>
+
+<!-- Beamer-style progress bar -->
+<div id="progress-bar">
+  <span class="nav-section" data-section="problem">问题</span>
+  <span class="nav-separator">›</span>
+  <span class="nav-section" data-section="foundation">基础</span>
+  <span class="nav-separator">›</span>
+  <span class="nav-section" data-section="method">方法</span>
+  <span class="nav-separator">›</span>
+  <span class="nav-section" data-section="practice">实践</span>
+  <span class="nav-separator">›</span>
+  <span class="nav-section" data-section="path">路径</span>
+  <div class="section-progress">
+    <div class="dots" id="section-dots"></div>
+    <span class="progress-text" id="progress-text"></span>
+  </div>
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- OPENING (5 min)                                               -->
+<!-- ============================================================ -->
+
+<!-- Slide 1: Title -->
+<section class="title-slide">
+  <p class="section-title">AI4SS Online Lecture · 2026</p>
+  <h1>AI Agent 时代的<br>社会科学研究</h1>
+  <h3 style="color: var(--muted); font-weight: 400;">从提问者到架构师</h3>
+  <br>
+  <p style="font-size: 0.8em;">郑思尧</p>
+  <p class="muted">上海交通大学国际与公共事务学院</p>
+  <aside class="notes">自我介绍，感谢邀请。今天分享从实践角度看AI如何改变社科研究工作流。</aside>
+</section>
+
+<!-- Slide 2: 2026年了 -->
+<section>
+  <h2>2026年了，你还在「用」AI吗？</h2>
+  <br>
+  <div class="fragment highlight-box">
+    <p>大多数人的 AI 使用还停在这些事情上：</p>
+    <p><strong>「帮我润色一下这段话」「帮我写个 R 代码」</strong></p>
+  </div>
+  <br>
+  <p class="fragment">这些当然有用。但到了 2026 年，AI 的用法早就变了。</p>
+  <p class="fragment">现在已经不是跟 AI 聊天的阶段了，而是<span class="accent">拿 AI 搭研究系统</span>的阶段。</p>
+  <aside class="notes">大家可能已经很熟悉ChatGPT了。但今天我想分享一个不同的视角。</aside>
+</section>
+
+<!-- Slide 3: 今天的主线 -->
+<section>
+  <h2>今天的主线</h2>
+  <br>
+  <p>不讲 <s>prompt engineering</s></p>
+  <p class="accent" style="font-size: 1.3em;">讲 research engineering</p>
+  <br>
+  <div class="fragment card">
+    <p><strong>三段：</strong></p>
+    <p>一、基础层：LLM 到底是什么？2026年的工具生态长什么样？</p>
+    <p>二、Agent 时代：聊天机器人和 AI Agent 有什么区别？</p>
+    <p>三、实践：我自己怎么拿 AI 做社科研究的</p>
+  </div>
+  <aside class="notes">预告全场结构。强调不是教prompt技巧，而是讲如何构建AI辅助的研究系统。</aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- PART 1: 基础层 (15 min)                                       -->
+<!-- ============================================================ -->
+
+<section>
+  <p class="section-title">基础</p>
+  <h1 class="center">LLM 与工具生态</h1>
+  <p class="center muted">模型直觉 · 生态思维 · 社科视角</p>
+</section>
+
+<!-- Slide 4: LLM 是什么 -->
+<section>
+  <h2>LLM 是什么？一个直觉</h2>
+  <br>
+  <div class="card">
+    <p>大语言模型 ≈ <strong>一个读过人类大量文本的「统计语感」</strong></p>
+  </div>
+  <br>
+  <div class="grid-2">
+    <div class="fragment">
+      <h3>它做不了的事</h3>
+      <ul>
+        <li>不是数据库，不「存储」事实</li>
+        <li>不是搜索引擎，不「检索」信息</li>
+        <li>数学计算经常出错</li>
+      </ul>
+    </div>
+    <div class="fragment">
+      <h3>它拿手的事</h3>
+      <ul>
+        <li>理解和生成自然语言</li>
+        <li>模式识别、类比推理</li>
+        <li>根据上下文「补全」内容</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">不讲Transformer细节。强调LLM的核心是「语感」而非「知识」。</aside>
+</section>
+
+<!-- Slide 5: 2026工具全景 -->
+<section>
+  <h2>2026年的 AI 工具全景</h2>
+  <p class="muted">不是一个工具，是一整个生态</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3>模型层</h3>
+      <p>ChatGPT (OpenAI) · DeepSeek · Claude (Anthropic) · Gemini (Google) · Llama (Meta) · Qwen (阿里) · ...</p>
+      <p class="muted" style="font-size:0.8em;">竞争激烈，能力趋同，选哪个不是关键</p>
+    </div>
+    <div class="card">
+      <h3>应用层</h3>
+      <p>对话界面 · API 调用 · IDE 插件 · 终端助手 · 自动化 Agent</p>
+      <p class="muted" style="font-size:0.8em;">同一个模型，用法不同，产出天差地别</p>
+    </div>
+  </div>
+  <div class="fragment highlight-box" style="margin-top:1em;">
+    模型只是基础设施。你怎么用它，才决定了你的生产力。
+  </div>
+  <aside class="notes">不做品牌对比。强调生态思维：模型能力趋同，差异在应用层。</aside>
+</section>
+
+<!-- Slide 6: 生态而非单一模型 -->
+<section>
+  <h2>为什么强调「生态」？</h2>
+  <br>
+  <div class="card">
+    <p style="font-size:0.9em;">
+      2024年大家问的是：「哪个模型最好？」<br>
+      2025年变成了：「哪个工具链最好？」<br>
+      到了2026年，问题变成了：「我的研究基础设施该怎么搭？」
+    </p>
+  </div>
+  <br>
+  <p class="fragment">模型会不断更新换代。DeepSeek-V3 出来了，Claude 4.5 出来了，GPT-5 出来了……</p>
+  <p class="fragment accent">但你搭的工作流、写的配置文件、积累的方法论知识，换个模型照样能用。这些才值得花时间。</p>
+  <aside class="notes">这是整场讲座的核心论点之一：投资工作流而非单一工具。</aside>
+</section>
+
+<!-- Slide 7: 社科研究者关心什么 -->
+<section>
+  <h2>社科研究者关心什么？</h2>
+  <br>
+  <div class="grid-3">
+    <div class="card fragment">
+      <h3>文本与语言</h3>
+      <p style="font-size:0.8em;">话语分析、编码、开放题处理、文献综述……社科研究里到处都是文本数据，LLM 在这方面确实好用</p>
+    </div>
+    <div class="card fragment">
+      <h3>因果推断</h3>
+      <p style="font-size:0.8em;">选什么方法、怎么诊断模型、怎么解释结果？这些地方需要方法论上的硬约束</p>
+    </div>
+    <div class="card fragment">
+      <h3>理论构建</h3>
+      <p style="font-size:0.8em;">讨论机制、跟文献对话、辨析概念……你可以拿 AI 当一个可以随时 argue 的同事</p>
+    </div>
+  </div>
+  <br>
+  <div class="fragment highlight-box">
+    社科跟工程不一样。代码跑通了不算完，因果识别对不对、理论机制说不说得通，这些才是我们真正在意的。
+  </div>
+  <aside class="notes">社科的三个核心需求区别于个人开发者和自然科学研究者。</aside>
+</section>
+
+<!-- Slide 8: 三个层次 -->
+<section>
+  <h2>AI 在社科中的三个层次</h2>
+  <br>
+  <div class="level-bar fragment">
+    <span class="level-badge">1</span>
+    <span>用工具：打开 ChatGPT 问问题、润色文字</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge">2</span>
+    <span>写代码：让 AI 帮你写 R/Python 分析代码</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge active">3</span>
+    <span>建系统：构建 AI 驱动的研究基础设施</span>
+  </div>
+  <br>
+  <p class="fragment muted">大多数人停在第1-2层。今天的重点是怎么走到第3层。</p>
+  <aside class="notes">引出Part 2。大部分人在层1-2，我们的目标是层3。</aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- PART 2: AGENT 时代 (25 min)                                   -->
+<!-- ============================================================ -->
+
+<section>
+  <p class="section-title">方法</p>
+  <h1 class="center">三个核心组件</h1>
+  <p class="center muted">AGENTS.md · Skills · MCP</p>
+</section>
+
+<!-- Slide 9a: 什么是 Agent -->
+<section>
+  <h2>先说清楚：什么是 Agent？</h2>
+  <div class="card" style="margin-top:0.5em;">
+    <p style="font-size:0.95em;">Agent = 能<span class="accent">自主规划、使用工具、持续执行任务</span>的 AI 系统</p>
+    <p class="muted" style="font-size:0.8em;">关键区别：它不只是回答问题，而是自己决定下一步做什么 — 能读文件、调工具、跑代码</p>
+  </div>
+  <div class="grid-2" style="margin-top:0.8em;">
+    <div class="card fragment">
+      <h3>Coding Agent</h3>
+      <div style="margin:0.3em 0;">
+        <span class="tag">Cursor</span>
+        <span class="tag">Claude Code</span>
+        <span class="tag">Codex</span>
+        <span class="tag">Windsurf</span>
+      </div>
+      <p style="font-size:0.8em;">能读你的代码库、自动改代码、跑测试。这些产品本质上做的是一回事，只是界面和体验不同。</p>
+    </div>
+    <div class="card fragment">
+      <h3>Research Agent</h3>
+      <div style="margin:0.3em 0;">
+        <span class="tag">ChatGPT Deep Research</span>
+      </div>
+      <p style="font-size:0.8em;">自主搜索数十个网页、综合分析、生成研究报告。跟 Coding Agent 不同，面向的是信息检索和综合。</p>
+    </div>
+  </div>
+  <div class="fragment highlight-box" style="margin-top:0.8em;">
+    你可能已经在用 Agent 了 — 如果你用过 Cursor，它就是一个 Coding Agent。只是你可能没意识到它跟 ChatGPT 聊天的本质区别。
+  </div>
+  <aside class="notes">先给Agent下定义，再分两类产品举例。让听众意识到Agent不是新概念，他们可能已经在用了。</aside>
+</section>
+
+<!-- Slide 9b: 从聊天到Agent -->
+<section>
+  <h2>从聊天到 Agent：什么变了？</h2>
+  <br>
+  <div class="versus">
+    <div class="card">
+      <h3>聊天模式</h3>
+      <ul style="font-size:0.8em;">
+        <li>一次性对话</li>
+        <li>没有项目记忆</li>
+        <li>碰不到文件和工具</li>
+        <li>你说什么它做什么</li>
+      </ul>
+    </div>
+    <span class="vs">→</span>
+    <div class="card" style="border: 2px solid var(--accent);">
+      <h3 style="color: var(--accent);">Agent 模式</h3>
+      <ul style="font-size:0.8em;">
+        <li>持续的项目上下文</li>
+        <li>能读你的代码和数据</li>
+        <li>调用工具、运行代码</li>
+        <li>主动规划和执行</li>
+      </ul>
+    </div>
+  </div>
+  <br>
+  <p class="fragment accent">Agent = 模型 + 项目记忆 (AGENTS.md) + 领域知识 (Skills) + 工具连接 (MCP)</p>
+  <aside class="notes">这是理解后续内容的关键框架。Agent不是更好的聊天，是不同的范式。</aside>
+</section>
+
+<!-- Slide 10: AGENTS.md -->
+<section>
+  <h2>AGENTS.md：给 AI 的项目说明书</h2>
+  <p class="muted">类比：实验室给新 RA 的入职手册</p>
+  <div class="grid-2">
+    <div>
+      <p>你会给新来的研究助理什么？</p>
+      <ul style="font-size:0.85em;">
+        <li class="fragment">项目的基本规则</li>
+        <li class="fragment">前人踩过的坑</li>
+        <li class="fragment">代码和数据的组织惯例</li>
+        <li class="fragment">绝对不能做的事</li>
+      </ul>
+    </div>
+    <div class="fragment">
+      <p><strong>AGENTS.md 做的是一样的事：</strong></p>
+      <div class="card" style="font-size:0.75em;">
+        <p>一个放在项目根目录的 Markdown 文件，告诉 AI：</p>
+        <ul>
+          <li>项目结构和惯例</li>
+          <li>已知的陷阱和注意事项</li>
+          <li>测试和构建命令</li>
+          <li>代码风格要求</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="fragment muted" style="font-size:0.65em; margin-top:0.8em;">AGENTS.md 已被 60,000+ 开源项目采用，由 Linux Foundation 管理 — <a href="https://agents.md" target="_blank" style="color:var(--accent)">AGENTS.md</a></p>
+  <aside class="notes">AGENTS.md是业界标准。不同AI工具都支持读取这个文件。</aside>
+</section>
+
+<!-- Slide A1: AGENTS.md 写什么、不写什么 -->
+<section>
+  <h2>AGENTS.md 写什么、不写什么</h2>
+  <p class="muted">少即是多，精准才有用</p>
+  <div class="grid-2">
+    <div class="good-box">
+      <p><strong>写进去</strong></p>
+      <ul style="font-size:0.8em;">
+        <li class="fragment">AI 猜不到的命令（特殊构建步骤、非标准测试入口）</li>
+        <li class="fragment">项目特有的坑（这个列名有歧义、那个函数已弃用）</li>
+        <li class="fragment">测试和验证命令（怎么跑测试、怎么检查结果）</li>
+        <li class="fragment">偏离常规的风格（我们用 tidyverse 不用 data.table）</li>
+      </ul>
+    </div>
+    <div class="bad-box">
+      <p><strong>别写</strong></p>
+      <ul style="font-size:0.8em;">
+        <li class="fragment">AI 读代码就能看出的（函数签名、目录结构）</li>
+        <li class="fragment">通用常识（"用 git 做版本控制"）</li>
+        <li class="fragment">大段理论背景（放进 Skill 或单独文档）</li>
+        <li class="fragment">频繁变动的信息（每周都变的 TODO）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="fragment highlight-box">
+    像维护代码一样维护 AGENTS.md — 文件太臃肿，AI 反而忽略重点。
+  </div>
+  <aside class="notes">AGENTS.md 不是越长越好。保持精炼，AI 才能聚焦关键信息。</aside>
+</section>
+
+<!-- Slide A2: AGENTS.md 的分层与跨工具支持 -->
+<section>
+  <h2>AGENTS.md 的分层与跨工具支持</h2>
+  <p class="muted">一份配置，全生态通用</p>
+  <div class="grid-2">
+    <div>
+      <div class="card">
+        <h3>三级目录层次</h3>
+        <pre style="font-size:0.7em; box-shadow:none; background:transparent;"><code class="language-text" data-trim>
+~/.claude/AGENTS.md        ← 全局（所有项目）
+project/AGENTS.md          ← 项目（当前项目）
+project/src/AGENTS.md      ← 子目录（局部覆盖）
+        </code></pre>
+        <p style="font-size:0.75em; color:var(--muted);">就近优先：子目录的规则覆盖项目级别</p>
+      </div>
+      <div class="card fragment">
+        <h3>引用语法</h3>
+        <pre style="font-size:0.7em; box-shadow:none; background:transparent;"><code class="language-markdown" data-trim>
+@docs/THEORY.md
+@regression-tables.md
+        </code></pre>
+        <p style="font-size:0.75em; color:var(--muted);">用 <code>@path</code> 引入外部文档，避免重复</p>
+      </div>
+    </div>
+    <div>
+      <div class="card fragment">
+        <h3>跨工具生态支持</h3>
+        <p style="font-size:0.8em;">以下工具都读取 AGENTS.md：</p>
+        <div style="margin-top:0.5em;">
+          <span class="tag">Claude Code</span>
+          <span class="tag">GitHub Copilot</span>
+          <span class="tag">Cursor</span>
+          <span class="tag">OpenAI Codex</span>
+          <span class="tag">Windsurf</span>
+          <span class="tag">Cline</span>
+          <span class="tag">Aider</span>
+          <span class="tag">20+ more</span>
+        </div>
+        <p style="font-size:0.75em; color:var(--muted); margin-top:0.5em;">Linux Foundation 管理的开放标准，不被任何厂商锁定</p>
+      </div>
+    </div>
+  </div>
+  <div class="fragment highlight-box">
+    写一份，所有 AI 工具都能读。这就是投资开放标准的价值。
+  </div>
+  <aside class="notes">分层设计让你可以全局设置风格偏好，项目级别设置具体规则。跨工具支持意味着不怕工具切换。</aside>
+</section>
+
+<!-- Slide 11: AGENTS.md 示例 -->
+<section>
+  <h2>一个社科项目的 AGENTS.md 长什么样？</h2>
+  <p class="muted">知道了写什么、不写什么，来看一个实际的项目配置</p>
+  <pre><code class="language-markdown" data-trim>
+# Project Guidelines
+
+## Core Rules
+1. Search before fixing — find ALL references before changing
+2. No workarounds — fix root cause, not symptoms
+3. Verify outputs — compare before/after statistics
+
+## Known Pitfalls
+| Issue | Solution |
+|-------|----------|
+| Data uses index, not ID column | Use explicit merge keys |
+| Two config files exist | Use src/config.py, not legacy |
+
+## Academic Standards
+- Coefficients: 3 decimal places
+- Standard errors in parentheses
+- Always report N and R²
+  </code></pre>
+  <p class="muted" style="font-size:0.7em;">脱敏后的示意结构，真实项目中会有更多项目特定的规则</p>
+  <aside class="notes">这是一个通用化的例子。关键点：错误只犯一次，写进配置文件就成了「制度记忆」。</aside>
+</section>
+
+<!-- Slide 12: Agent Skills -->
+<section>
+  <h2>Agent Skills：给 AI 的领域知识包</h2>
+  <p class="muted">AGENTS.md 解决了项目上下文，Skills 再给 AI 加上领域专长</p>
+  <div class="card fragment">
+    <h3>什么是 Skill？</h3>
+    <p style="font-size:0.85em;">一个文件夹，里面包含指令、知识、脚本，让 AI 获得特定领域的专业能力。</p>
+  </div>
+  <div class="grid-3 fragment">
+    <div class="card">
+      <p class="tag">方法论</p>
+      <p style="font-size:0.75em;">因果推断方法选择、多重插补诊断、面板数据分析...</p>
+    </div>
+    <div class="card">
+      <p class="tag">流程</p>
+      <p style="font-size:0.75em;">论文审稿标准、回归表格规范、文献综述框架...</p>
+    </div>
+    <div class="card">
+      <p class="tag">自动化</p>
+      <p style="font-size:0.75em;">代码审计、可视化检查、版本控制流程...</p>
+    </div>
+  </div>
+  <p class="fragment muted" style="font-size:0.65em; margin-top:0.8em;">Agent Skills 是开放标准，已被 20+ AI 工具支持 — <a href="https://agentskills.io" target="_blank" style="color:var(--accent)">agentskills.io</a></p>
+  <aside class="notes">Skills是可复用的。写一次，在不同AI工具中都能使用。</aside>
+</section>
+
+<!-- Slide S1: Skill 的规范格式与渐进加载 -->
+<section>
+  <h2>Skill 的规范格式与渐进加载</h2>
+  <p class="muted">结构化的知识，按需释放 — 颜色对应加载阶段</p>
+  <div class="grid-2">
+    <div>
+      <div style="font-size:0.52em; background:#1e293b; padding:1em; border-radius:8px; font-family:'JetBrains Mono','Fira Code',monospace; line-height:1.5; white-space:pre;">
+<span style="color:#4ade80;">---</span>
+<span style="color:#4ade80;">name: causal-inference</span>          <span style="color:#4ade80; font-weight:bold;">← 阶段 1</span>
+<span style="color:#4ade80;">description: |</span>
+<span style="color:#4ade80;">  因果推断方法选择与诊断。</span>
+<span style="color:#4ade80;">  Use when: DID, 面板数据因果推断</span>
+<span style="color:#4ade80;">---</span>
+
+<span style="color:#94a3b8;">my-skill/</span>
+<span style="color:#fbbf24;">├── SKILL.md</span>              <span style="color:#fbbf24; font-weight:bold;">← 阶段 2</span>
+<span style="color:#60a5fa;">├── references/</span>           <span style="color:#60a5fa; font-weight:bold;">← 阶段 3</span>
+<span style="color:#60a5fa;">│   └── diagnostics.md</span>
+<span style="color:#60a5fa;">└── scripts/</span>
+<span style="color:#60a5fa;">    └── did_template.R</span>
+      </div>
+    </div>
+    <div>
+      <div class="card fragment" style="border-left: 4px solid var(--green);">
+        <div class="level-bar" style="padding:0.2em 0;">
+          <span class="level-badge" style="background:var(--green);">1</span>
+          <span><strong>启动</strong>：~100 tokens<br><span style="font-size:0.85em;">名称 + 描述 + 触发词 — AI 扫一眼就知道该不该加载</span></span>
+        </div>
+      </div>
+      <div class="card fragment" style="border-left: 4px solid var(--amber);">
+        <div class="level-bar" style="padding:0.2em 0;">
+          <span class="level-badge" style="background:var(--amber);">2</span>
+          <span><strong>激活</strong>：&lt;5000 tokens<br><span style="font-size:0.85em;">SKILL.md 正文 — 核心指令 + 决策树</span></span>
+        </div>
+      </div>
+      <div class="card fragment" style="border-left: 4px solid var(--accent);">
+        <div class="level-bar" style="padding:0.2em 0;">
+          <span class="level-badge" style="background:var(--accent);">3</span>
+          <span><strong>按需</strong>：不限<br><span style="font-size:0.85em;">templates/ + examples/ — 只在需要时加载</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">左侧代码的颜色和右侧阶段卡片一一对应。渐进加载的核心是节省上下文窗口，只在需要时释放知识。</aside>
+</section>
+
+<!-- Slide 13: Skill 示例 -->
+<section>
+  <h2>一个因果推断 Skill 长什么样？</h2>
+  <p class="muted">这就是一个完整的 SKILL.md 正文部分</p>
+  <pre><code class="language-markdown" data-trim>
+# Causal Inference Method Selection
+
+## Decision Tree
+Parallel trends hold?
+├─ Yes → Two-way Fixed Effects (TWFE)
+└─ No  → Factor structure expected?
+         ├─ Yes → Interactive Fixed Effects (IFE)
+         └─ No  → Matrix Completion (MC)
+
+## Diagnostic Checklist
+1. Run placebo test (pre-treatment effects)
+2. Visual inspection (gap plot, equivalence plot)
+3. Check pre-trends significance
+4. Sensitivity analysis (breakdown frontier)
+
+## Common Pitfalls
+- Don't use TWFE with staggered treatment
+- Always report pre-treatment fit statistics
+- Bootstrap SE needs ≥200 iterations for stability
+  </code></pre>
+  <p class="muted" style="font-size:0.7em;">虚构的通用示例，真实 Skill 会包含更多参数细节和代码模板</p>
+  <aside class="notes">关键：把方法论教科书里的决策树编码成AI可用的格式。这不需要CS背景。</aside>
+</section>
+
+<!-- Slide 14: MCP -->
+<section>
+  <h2>MCP：AI 通往外部世界的接口</h2>
+  <p class="muted">有了项目知识和领域专长，还差动手能力</p>
+  <div class="card fragment">
+    <p>类比：<strong>USB-C</strong> 让你的电脑连接各种设备。<strong>MCP 让 AI 连接各种工具和数据源。</strong></p>
+  </div>
+  <br>
+  <p class="fragment" style="font-size:0.95em;">有了 MCP，AI 就不只是聊天了，它可以<span class="accent">直接读你的数据、跑你的分析、管理你的文件</span>。</p>
+  <p class="fragment muted" style="font-size:0.65em; margin-top:0.8em;">MCP 是开放协议 — <a href="https://modelcontextprotocol.io" target="_blank" style="color:var(--accent)">modelcontextprotocol.io</a></p>
+  <aside class="notes">MCP让AI从「聊天助手」变成「有手有脚的研究助理」。下一张详细讲三个核心概念。</aside>
+</section>
+
+<!-- Slide M1: MCP 架构三个核心概念 -->
+<section>
+  <h2>MCP 架构：三个核心概念</h2>
+  <p class="muted">不同的控制权，不同的用途</p>
+  <div class="grid-3">
+    <div class="card fragment">
+      <h3>Tools</h3>
+      <p class="tag">AI 控制</p>
+      <p style="font-size:0.75em;">AI 主动调用的操作：跑回归、清洗数据、生成图表</p>
+      <p style="font-size:0.7em; color:var(--muted);">社科示例：AI 自动选择 DID/SCM 并执行</p>
+    </div>
+    <div class="card fragment">
+      <h3>Resources</h3>
+      <p class="tag">应用控制</p>
+      <p style="font-size:0.75em;">AI 可以读取的数据：面板数据、文献库、调查问卷</p>
+      <p style="font-size:0.7em; color:var(--muted);">社科示例：AI 读取 Zotero 文献元数据</p>
+    </div>
+    <div class="card fragment">
+      <h3>Prompts</h3>
+      <p class="tag">用户控制</p>
+      <p style="font-size:0.75em;">用户触发的预设流程：审稿模板、分析报告生成</p>
+      <p style="font-size:0.7em; color:var(--muted);">社科示例：一键生成论文诊断报告</p>
+    </div>
+  </div>
+  <div class="card fragment" style="margin-top:0.8em; text-align:center; font-size:0.8em;">
+    <strong>Host</strong>（IDE / 终端）→ <strong>Client</strong>（AI 应用）→ <strong>Server</strong>（你的工具和数据）
+  </div>
+  <aside class="notes">Tools/Resources/Prompts 三种 primitive 对应三种控制模式。Host-Client-Server 是 MCP 的通信链路。</aside>
+</section>
+
+<!-- Slide M2: 一个 MCP Server 有多简单 -->
+<section>
+  <h2>一个 MCP Server 有多简单？</h2>
+  <p class="muted">Python + FastMCP，十几行就够 — 颜色对应右侧概念</p>
+  <div class="grid-2">
+    <div>
+      <div style="font-size:0.52em; background:#1e293b; padding:1em; border-radius:8px; font-family:'JetBrains Mono','Fira Code',monospace; line-height:1.5; white-space:pre;">
+<span style="color:#94a3b8;">from fastmcp import FastMCP</span>
+
+<span style="color:#94a3b8;">mcp = FastMCP("社科研究助手")</span>
+
+<span style="color:#4ade80;">@mcp.tool()</span>                        <span style="color:#4ade80; font-weight:bold;">← Tool：AI 主动调用</span>
+<span style="color:#4ade80;">def run_did(data_path: str,</span>
+<span style="color:#4ade80;">            treat_col: str,</span>
+<span style="color:#4ade80;">            time_col: str) -> str:</span>
+<span style="color:#4ade80;">    """执行双重差分分析"""</span>
+<span style="color:#4ade80;">    # ... 分析逻辑 ...</span>
+<span style="color:#4ade80;">    return f"ATT = {att:.3f}"</span>
+
+<span style="color:#60a5fa;">@mcp.resource("data://codebook")</span>   <span style="color:#60a5fa; font-weight:bold;">← Resource：AI 读取</span>
+<span style="color:#60a5fa;">def get_codebook() -> str:</span>
+<span style="color:#60a5fa;">    return open("codebook.md").read()</span>
+      </div>
+    </div>
+    <div>
+      <div class="card fragment" style="border-left: 4px solid var(--green);">
+        <h3 style="color: var(--green);">@mcp.tool()</h3>
+        <p style="font-size:0.8em;">把一个普通 Python 函数变成 AI 可调用的<strong>工具</strong>。AI 看到函数名和 docstring，自己决定何时调用。</p>
+      </div>
+      <div class="card fragment" style="border-left: 4px solid var(--accent);">
+        <h3 style="color: var(--accent);">@mcp.resource()</h3>
+        <p style="font-size:0.8em;">把数据暴露给 AI 读取。AI 需要上下文时自动获取，不需要你手动粘贴。</p>
+      </div>
+    </div>
+  </div>
+  <div class="fragment highlight-box">
+    已有的分析代码加两行装饰器，就能变成 AI 可调用的工具。不需要学新框架。
+  </div>
+  <aside class="notes">FastMCP 是官方推荐的 Python SDK。颜色对应：绿色=Tool（AI主动调用），蓝色=Resource（AI读取数据）。</aside>
+</section>
+
+<!-- Slide: MCP 应用场景 -->
+<section>
+  <h2>MCP 实际能做什么？</h2>
+  <p class="muted">几个社科研究场景</p>
+  <div class="grid-2" style="margin-top:0.5em;">
+    <div class="card fragment">
+      <p><strong>连接数据库</strong>：AI 直接查询你的面板数据，不用手动导出</p>
+    </div>
+    <div class="card fragment">
+      <p><strong>调用 R/Python</strong>：AI 写好代码直接运行，你看结果就行</p>
+    </div>
+    <div class="card fragment">
+      <p><strong>文献管理</strong>：AI 搜索和整理 Zotero/Mendeley 中的文献</p>
+    </div>
+    <div class="card fragment">
+      <p><strong>网络数据</strong>：AI 帮你抓取和处理公开数据源</p>
+    </div>
+  </div>
+  <aside class="notes">MCP不是未来概念，这些今天就可以做到。</aside>
+</section>
+
+<!-- Slide: 三位一体 -->
+<section>
+  <h2>三位一体：AGENTS.md + Skills + MCP</h2>
+  <p class="muted">三者缺一不可，各司其职</p>
+  <div style="display:flex; justify-content:center; align-items:center; gap:0; margin:1.2em 0 0.8em;">
+    <div class="fragment card" style="text-align:center; padding:1em 1.2em; border-top:4px solid var(--green); min-width:240px;">
+      <p style="font-size:1.4em; margin-bottom:0.2em;">AGENTS.md</p>
+      <p class="muted" style="font-size:0.75em; margin-bottom:0.4em;">项目记忆</p>
+      <p style="font-size:0.8em;">这个项目的规则和陷阱<br>「<code>id</code> 列其实是 <code>index</code>」</p>
+    </div>
+    <div style="font-size:1.5em; color:var(--muted); padding:0 0.4em;">+</div>
+    <div class="fragment card" style="text-align:center; padding:1em 1.2em; border-top:4px solid var(--amber); min-width:240px;">
+      <p style="font-size:1.4em; margin-bottom:0.2em;">Skills</p>
+      <p class="muted" style="font-size:0.75em; margin-bottom:0.4em;">领域知识</p>
+      <p style="font-size:0.8em;">方法论怎么选、表格怎么做<br>「parallel trends 不满足 → IFE」</p>
+    </div>
+    <div style="font-size:1.5em; color:var(--muted); padding:0 0.4em;">+</div>
+    <div class="fragment card" style="text-align:center; padding:1em 1.2em; border-top:4px solid var(--accent); min-width:240px;">
+      <p style="font-size:1.4em; margin-bottom:0.2em;">MCP</p>
+      <p class="muted" style="font-size:0.75em; margin-bottom:0.4em;">执行能力</p>
+      <p style="font-size:0.8em;">读数据、跑分析、管理文献<br>「连接 Zotero、运行 R」</p>
+    </div>
+  </div>
+  <div class="fragment" style="text-align:center; margin-top:0.6em;">
+    <div class="bad-box" style="display:inline-block; margin:0 0.5em; padding:0.5em 1em; text-align:center;">
+      <p style="font-size:0.8em;">只有 MCP 没有 Skills<br><strong>有手但不懂方法</strong></p>
+    </div>
+    <div class="bad-box" style="display:inline-block; margin:0 0.5em; padding:0.5em 1em; text-align:center;">
+      <p style="font-size:0.8em;">只有 Skills 没有 MCP<br><strong>懂但动不了手</strong></p>
+    </div>
+    <div class="bad-box" style="display:inline-block; margin:0 0.5em; padding:0.5em 1em; text-align:center;">
+      <p style="font-size:0.8em;">没有 AGENTS.md<br><strong>不了解你的项目</strong></p>
+    </div>
+  </div>
+  <aside class="notes">强调三者互补关系。缺任何一个，AI 的能力都是不完整的。</aside>
+</section>
+
+<!-- Slide: 全流程示例 -->
+<section>
+  <h2>全流程：一个研究项目中 AI 的参与</h2>
+  <p class="muted">四个环节，三个组件贯穿始终</p>
+  <div style="display:flex; align-items:stretch; gap:0; margin:1em 0; position:relative;">
+    <!-- Node 1 -->
+    <div class="fragment" style="flex:1; position:relative;">
+      <div class="card" style="border-top:4px solid var(--accent); margin:0 0.3em; height:100%; display:flex; flex-direction:column;">
+        <p style="font-size:0.65em; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Step 1</p>
+        <p style="font-size:0.95em; font-weight:700; margin:0.2em 0;">文献回顾</p>
+        <p style="font-size:0.75em; flex:1;">AI 搜索 Zotero 文献库，按方法论框架整理综述</p>
+        <div style="margin-top:0.4em;">
+          <span class="tag" style="background:rgba(37,99,235,0.15); color:var(--accent);">MCP</span>
+          <span class="tag" style="background:rgba(217,119,6,0.15); color:var(--amber);">Skills</span>
+        </div>
+      </div>
+      <div style="position:absolute; right:-0.6em; top:50%; transform:translateY(-50%); font-size:1.2em; color:var(--muted); z-index:1;">&#8594;</div>
+    </div>
+    <!-- Node 2 -->
+    <div class="fragment" style="flex:1; position:relative;">
+      <div class="card" style="border-top:4px solid var(--green); margin:0 0.3em; height:100%; display:flex; flex-direction:column;">
+        <p style="font-size:0.65em; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Step 2</p>
+        <p style="font-size:0.95em; font-weight:700; margin:0.2em 0;">数据处理</p>
+        <p style="font-size:0.75em; flex:1;">AI 按项目规则清洗数据，避开已知的列名陷阱</p>
+        <div style="margin-top:0.4em;">
+          <span class="tag" style="background:rgba(5,150,105,0.15); color:var(--green);">AGENTS.md</span>
+          <span class="tag" style="background:rgba(37,99,235,0.15); color:var(--accent);">MCP</span>
+        </div>
+      </div>
+      <div style="position:absolute; right:-0.6em; top:50%; transform:translateY(-50%); font-size:1.2em; color:var(--muted); z-index:1;">&#8594;</div>
+    </div>
+    <!-- Node 3 -->
+    <div class="fragment" style="flex:1; position:relative;">
+      <div class="card" style="border-top:4px solid var(--amber); margin:0 0.3em; height:100%; display:flex; flex-direction:column;">
+        <p style="font-size:0.65em; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Step 3</p>
+        <p style="font-size:0.95em; font-weight:700; margin:0.2em 0;">方法选择与诊断</p>
+        <p style="font-size:0.75em; flex:1;">AI 按因果推断决策树选方法、跑诊断检验</p>
+        <div style="margin-top:0.4em;">
+          <span class="tag" style="background:rgba(217,119,6,0.15); color:var(--amber);">Skills</span>
+        </div>
+      </div>
+      <div style="position:absolute; right:-0.6em; top:50%; transform:translateY(-50%); font-size:1.2em; color:var(--muted); z-index:1;">&#8594;</div>
+    </div>
+    <!-- Node 4 -->
+    <div class="fragment" style="flex:1; position:relative;">
+      <div class="card" style="border-top:4px solid #7c3aed; margin:0 0.3em; height:100%; display:flex; flex-direction:column;">
+        <p style="font-size:0.65em; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Step 4</p>
+        <p style="font-size:0.95em; font-weight:700; margin:0.2em 0;">结果呈现</p>
+        <p style="font-size:0.75em; flex:1;">AI 按期刊规范生成回归表格、输出图表</p>
+        <div style="margin-top:0.4em;">
+          <span class="tag" style="background:rgba(217,119,6,0.15); color:var(--amber);">Skills</span>
+          <span class="tag" style="background:rgba(37,99,235,0.15); color:var(--accent);">MCP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fragment highlight-box" style="text-align:center;">
+    这套东西串起来，AI 就不只是「帮忙写代码」，而是贯穿研究全流程的基础设施。
+  </div>
+  <aside class="notes">这张图的目的是让听众看到：三个组件不是孤立的概念，而是在研究全流程中协同工作的。每个环节都有明确的组件支撑。</aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- PART 3: 实践 (30 min)                                         -->
+<!-- ============================================================ -->
+
+<section>
+  <p class="section-title">实践</p>
+  <h1 class="center">经验与教训</h1>
+  <p class="center muted">真实项目 · 踩过的坑 · 验证原则</p>
+</section>
+
+<!-- Slide 18: 我的旅程 -->
+<section>
+  <h2>我的 AI 研究之旅</h2>
+  <br>
+  <div class="level-bar fragment">
+    <span class="level-badge">0</span>
+    <span>2023：开始用 ChatGPT 问研究相关的问题</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge">1</span>
+    <span>2024：让 AI 帮写分析代码，处理数据清洗</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge">2</span>
+    <span>2025：开始用 Agent 模式，给项目写配置文件</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge active">3</span>
+    <span>2025-26：创建自定义 Skills，编码领域知识</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge active">4</span>
+    <span>2026：搭建完整的 MCP 工具链，形成研究基础设施</span>
+  </div>
+  <br>
+  <p class="fragment muted">说白了就是反复试错、逐步积累的过程。</p>
+  <aside class="notes">坦诚分享自己的进化过程。强调这是一个渐进的过程，不需要一步到位。</aside>
+</section>
+
+<!-- Slide 19: Case 1 文本分析 -->
+<section>
+  <h2>实践 1：AI 辅助大规模文本分析</h2>
+  <div class="card">
+    <h3>场景</h3>
+    <p style="font-size:0.85em;">一个涉及大量中文学术文本的研究项目，需要对文本进行多维度分类和测量。</p>
+  </div>
+  <div class="fragment">
+    <h3>AI 参与了什么？</h3>
+    <ul style="font-size:0.85em;">
+      <li class="fragment">搭建 BERT 分类器的代码框架和训练流水线</li>
+      <li class="fragment">调试嵌入空间 (Embedding) 的维度分析</li>
+      <li class="fragment">优化并行处理架构，提升百万级数据的处理效率</li>
+    </ul>
+  </div>
+  <div class="fragment highlight-box">
+    一个意外收获：嵌入空间里的「异常」结果其实不是 AI 出了错，而是数据本身的结构就是那样的。
+  </div>
+  <aside class="notes">不透露具体项目。重点是AI帮助发现数据结构的故事。</aside>
+</section>
+
+<!-- Slide 20: Case 2 LLM信息抽取 -->
+<section>
+  <h2>实践 2：LLM 做信息抽取的真实教训</h2>
+  <div class="card">
+    <h3>场景</h3>
+    <p style="font-size:0.85em;">用 LLM 从非结构化网页中抽取结构化信息（人名、职称、机构等）。</p>
+  </div>
+  <div class="versus fragment">
+    <div class="bad-box">
+      <p><strong>第1次：</strong>直接写 prompt，看起来不错</p>
+      <p><strong>实际结果：</strong>LLM 把名字和机构名拼在一起、把「助理教授」匹配成「教授」...</p>
+    </div>
+    <span class="vs">→</span>
+    <div class="good-box">
+      <p><strong>第8次：</strong>处理了所有 edge cases</p>
+      <p><strong>关键：</strong>靠的不是更好的 prompt，而是更好的后处理逻辑</p>
+    </div>
+  </div>
+  <div class="fragment highlight-box">
+    LLM 不是开箱即用的。从「看起来能用」到「真正可靠」，中间隔了系统性测试和大量迭代。
+  </div>
+  <aside class="notes">这个故事很有代表性。很多人在第1次就认为「AI搞定了」，但真正的工作在后面。</aside>
+</section>
+
+<!-- Slide 21: Case 3 思考的对话者 -->
+<section>
+  <h2>实践 3：AI 作为「思考的对话者」</h2>
+  <div class="card">
+    <h3>场景</h3>
+    <p style="font-size:0.85em;">一个调查实验项目，某个处理条件的结果不符合预期。传统做法：是不是代码写错了？样本量不够？</p>
+  </div>
+  <div class="fragment">
+    <p><strong>和 AI 的对话过程：</strong></p>
+    <ol style="font-size:0.85em;">
+      <li class="fragment">AI：你的处理效应为什么包含间接效应？试试分解看看</li>
+      <li class="fragment">我：控制了中介变量后，直接效应反转了</li>
+      <li class="fragment">AI：这是经典的<strong>抑制效应 (suppression effect)</strong>，可能恰恰是你论文的亮点</li>
+    </ol>
+  </div>
+  <div class="fragment highlight-box">
+    这个例子说明的是：AI 在社科里的用处，不只是帮你跑回归。它还能帮你想清楚为什么结果跟理论对不上。
+  </div>
+  <aside class="notes">这里体现了社科的特殊性：理论驱动。AI帮你思考，不只是帮你执行。</aside>
+</section>
+
+<!-- Slide 22: Case 4 四层基础设施 -->
+<section>
+  <h2>实践 4：四层 AI 研究基础设施</h2>
+  <div class="card fragment">
+    <div class="level-bar">
+      <span class="level-badge" style="background:var(--green);">标准</span>
+      <span>回归表格规范、图表惯例、期刊格式要求</span>
+    </div>
+  </div>
+  <div class="card fragment">
+    <div class="level-bar">
+      <span class="level-badge" style="background:var(--amber);">自动化</span>
+      <span>代码 + 数据版本控制、每日工作日志自动生成</span>
+    </div>
+  </div>
+  <div class="card fragment">
+    <div class="level-bar">
+      <span class="level-badge">流程</span>
+      <span>论文自我审稿、分析结果文档化、合作者沟通模板</span>
+    </div>
+  </div>
+  <div class="card fragment">
+    <div class="level-bar">
+      <span class="level-badge" style="background:#7c3aed;">方法</span>
+      <span>因果推断方法选择、缺失数据处理、项目反应理论...</span>
+    </div>
+  </div>
+  <p class="fragment muted">每一层都是一个或多个 Agent Skills。慢慢攒就行，不用一次搭完。</p>
+  <aside class="notes">关键信息：这是逐步搭建的，不需要CS背景，也不需要一步到位。</aside>
+</section>
+
+<!-- Slide 23: Let It Crash -->
+<section>
+  <h2>「Let It Crash」原则</h2>
+  <p class="muted">为什么学术代码不能静默降级</p>
+  <div class="versus">
+    <div class="bad-box">
+      <p><strong>静默降级</strong></p>
+      <pre style="font-size:0.7em; margin:0.5em 0; background:transparent; box-shadow:none;"><code class="language-python">try:
+    score = model.predict(text)
+except:
+    score = 0  # 悄悄赋默认值</code></pre>
+      <p style="font-size:0.75em;">研究者不知道哪些数据用了降级值。论文发表后才发现。</p>
+    </div>
+    <span class="vs">vs</span>
+    <div class="good-box">
+      <p><strong>显式失败</strong></p>
+      <pre style="font-size:0.7em; margin:0.5em 0; background:transparent; box-shadow:none;"><code class="language-python">try:
+    score = model.predict(text)
+except Exception as e:
+    logger.error(f"Failed: {e}")
+    raise  # 立刻停止</code></pre>
+      <p style="font-size:0.75em;">出错立刻知道。宁可中断流水线，也别带着隐患继续跑。</p>
+    </div>
+  </div>
+  <div class="fragment highlight-box">
+    学术代码跟产品代码不一样。我们追求的不是「不崩溃」，而是<strong>「每个数字都可溯源」</strong>。
+  </div>
+  <aside class="notes">这个原则对社科研究者特别重要。你的论文中的每一个系数都必须是透明的。</aside>
+</section>
+
+<!-- Slide 24: AGENTS.md 作为制度记忆 -->
+<section>
+  <h2>AGENTS.md 作为「制度记忆」</h2>
+  <br>
+  <div class="card">
+    <p style="font-size:0.9em;">每一条规则背后都是一个真实的错误。</p>
+    <p style="font-size:0.9em;">把它写进 AGENTS.md，这个错误就不会再犯第二次。</p>
+  </div>
+  <br>
+  <pre class="fragment"><code class="language-markdown" data-trim>
+## Known Pitfalls
+
+| Issue | Solution |
+|-------|----------|
+| Merge by position fails silently | Always use explicit ID keys |
+| Function was renamed in v2 | Use new_name(), not old_name() |
+| Cache ignores data changes | Include data fingerprint in cache key |
+| Silent fallback hides errors | Remove all try-except with defaults |
+  </code></pre>
+  <br>
+  <p class="fragment accent">这就是所谓的「研究工程化」：把个人经验变成系统化的规则。</p>
+  <aside class="notes">和写实验日志一个道理。但这次是写给AI看的「实验日志」。</aside>
+</section>
+
+<!-- Slide 25: 验证文化 -->
+<section>
+  <h2>AI 的输出是假说，不是结论</h2>
+  <div class="grid-2">
+    <div class="card fragment">
+      <h3>容易踩的坑</h3>
+      <ul style="font-size:0.8em;">
+        <li>「AI 写的代码跑通了，应该没问题吧」</li>
+        <li>「结果和预期差不多，直接用了」</li>
+        <li>「AI 说这个方法合适，那就用这个」</li>
+      </ul>
+    </div>
+    <div class="card fragment">
+      <h3>应该怎么做</h3>
+      <ul style="font-size:0.8em;">
+        <li>每次修改后<strong>比对前后统计量</strong></li>
+        <li>先拿小数据集<strong>验证逻辑</strong>，再跑全量</li>
+        <li>AI 推荐的方法，<strong>回去查原始文献</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="fragment highlight-box">
+    我在 AGENTS.md 里写的第一条规则就是：<br>
+    <strong>"Verify outputs after code changes — compare before/after statistics."</strong>
+  </div>
+  <aside class="notes">这不是不信任AI，而是学术研究的基本功。AI让你快了，但不能让你放松验证。</aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- CLOSING (10 min)                                              -->
+<!-- ============================================================ -->
+
+<section>
+  <p class="section-title">路径</p>
+  <h1 class="center">从提问者到架构师</h1>
+  <p class="center muted">五级进化 · 开源工具 · 起步建议</p>
+</section>
+
+<!-- Slide 26: 五级路径 -->
+<section>
+  <h2>从提问者到架构师</h2>
+  <br>
+  <div class="level-bar">
+    <span class="level-badge">0</span>
+    <span>对话：用 ChatGPT / DeepSeek 问问题</span>
+    <span class="tag" style="background:#e2e8f0; color:var(--muted);">大多数人在这里</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge">1</span>
+    <span>编程：让 AI 帮你写 R/Python 代码</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge">2</span>
+    <span>配置：写 AGENTS.md，教 AI 理解你的项目</span>
+    <span class="tag">← 门槛在这里</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge active">3</span>
+    <span>知识：创建 Skills，把领域知识编码进 AI</span>
+  </div>
+  <div class="level-bar fragment">
+    <span class="level-badge active">4</span>
+    <span>基础设施：搭建 MCP + 完整工具链</span>
+  </div>
+  <br>
+  <p class="fragment accent">每一级都在上一级的基础上。从 Level 2 开始，你就算是「建设者」了。</p>
+  <aside class="notes">告诉观众他们可以从哪里开始。Level 2只需要写一个Markdown文件。</aside>
+</section>
+
+<!-- Slide 27: 实战洞察 -->
+<section>
+  <h2>实战洞察：只有做过才知道的事</h2>
+  <div class="grid-2" style="margin-top:0.5em;">
+    <div class="card fragment">
+      <p style="font-size:0.85em;">模型会换，工作流不会。你积累的 Skills 和 AGENTS.md 换个模型照样能用。</p>
+    </div>
+    <div class="card fragment">
+      <p style="font-size:0.85em;">别想着一步到位。先给一个项目写 AGENTS.md，记录一个常犯的错误就行。</p>
+    </div>
+    <div class="card fragment">
+      <p style="font-size:0.85em;">LLM 的输出需要系统性验证。从「看起来能用」到「真正可靠」，中间隔了大量测试。</p>
+    </div>
+    <div class="card fragment">
+      <p style="font-size:0.85em;">社科有自己的 AI 使用方式。追求的不是更快地跑回归，而是更深入地理解理论和数据。</p>
+    </div>
+  </div>
+  <aside class="notes">这些是真正有价值的经验。每一条背后都是具体的实践。</aside>
+</section>
+
+<!-- Skills 发布（属于「路径」部分） -->
+<section>
+  <h2>三个 Skills 送给大家</h2>
+  <p class="center muted" style="font-size:1.1em;">github.com/SiyaoZheng/ai4ss-skills</p>
+  <br>
+  <div class="grid-3">
+    <div class="card" style="text-align:center;">
+      <p style="font-size:1.2em; font-weight:600;">latex-tables</p>
+      <p class="muted">回归表格规范</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <p style="font-size:1.2em; font-weight:600;">analysis-explainer</p>
+      <p class="muted">分析结果文档化</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <p style="font-size:1.2em; font-weight:600;">r-performance</p>
+      <p class="muted">R 代码性能优化</p>
+    </div>
+  </div>
+</section>
+
+<!-- Skill 1: latex-tables -->
+<section>
+  <h2>Skill 1: latex-tables</h2>
+  <p class="muted">回归表格规范 · 标准层</p>
+  <p style="font-size:0.6em;"><a href="https://github.com/SiyaoZheng/ai4ss-skills/blob/main/latex-tables.skill" style="color:var(--accent)">github.com/SiyaoZheng/ai4ss-skills/blob/main/latex-tables.skill</a></p>
+  <div class="card">
+    <h3>解决什么问题？</h3>
+    <p style="font-size:0.85em;">每次做回归表格都要查期刊格式要求，星号放哪、标准误怎么写、用几位小数……</p>
+  </div>
+  <div class="grid-2 fragment" style="margin-top:0.8em;">
+    <div class="good-box">
+      <p><strong>AI 会做</strong></p>
+      <ul style="font-size:0.75em;">
+        <li>booktabs 三线表</li>
+        <li>显著性标记 + 标准误注释</li>
+        <li>AEA / APSR 期刊格式</li>
+      </ul>
+    </div>
+    <div style="font-size:0.8em;">
+      <p><strong>触发方式</strong></p>
+      <p>「把这个回归结果转成 LaTeX 表格」</p>
+      <p>「按 AEA 格式做一个 summary statistics」</p>
+    </div>
+  </div>
+  <aside class="notes">最简单的一个skill，解决的是格式标准化问题。</aside>
+</section>
+
+<!-- Skill 2: analysis-explainer -->
+<section>
+  <h2>Skill 2: analysis-explainer</h2>
+  <p class="muted">分析结果文档化 · 流程层</p>
+  <p style="font-size:0.6em;"><a href="https://github.com/SiyaoZheng/ai4ss-skills/blob/main/analysis-explainer.skill" style="color:var(--accent)">github.com/SiyaoZheng/ai4ss-skills/blob/main/analysis-explainer.skill</a></p>
+  <div class="card">
+    <h3>解决什么问题？</h3>
+    <p style="font-size:0.85em;">跑完分析，合作者问「你用的什么方法？参数是多少？」每次都要重新整理一遍。</p>
+  </div>
+  <div class="grid-2 fragment" style="margin-top:0.8em;">
+    <div class="good-box">
+      <p><strong>AI 会做</strong></p>
+      <ul style="font-size:0.75em;">
+        <li>自动嵌入所有图表</li>
+        <li>记录方法参数（seed、迭代次数等）</li>
+        <li>生成 PDF 技术文档</li>
+      </ul>
+    </div>
+    <div style="font-size:0.8em;">
+      <p><strong>触发方式</strong></p>
+      <p>「帮我解释这些分析结果」</p>
+      <p>「写一份技术说明给合作者」</p>
+    </div>
+  </div>
+  <p class="fragment muted" style="font-size:0.7em; margin-top:0.5em;">内置 style-guide：避免 AI 腔，输出符合学术写作规范</p>
+  <aside class="notes">这个skill的价值在于让分析过程可复现、可沟通。</aside>
+</section>
+
+<!-- Skill 3: r-performance -->
+<section>
+  <h2>Skill 3: r-performance</h2>
+  <p class="muted">R 代码性能优化 · 工程层</p>
+  <p style="font-size:0.6em;"><a href="https://github.com/SiyaoZheng/ai4ss-skills/blob/main/r-performance.skill" style="color:var(--accent)">github.com/SiyaoZheng/ai4ss-skills/blob/main/r-performance.skill</a></p>
+  <div class="card">
+    <h3>解决什么问题？</h3>
+    <p style="font-size:0.85em;">代码跑得慢，但不知道慢在哪、怎么优化。想并行但不会配置 HPC。</p>
+  </div>
+  <div class="grid-2 fragment" style="margin-top:0.8em;">
+    <div class="good-box">
+      <p><strong>AI 会做</strong></p>
+      <ul style="font-size:0.75em;">
+        <li>用 profvis 定位瓶颈</li>
+        <li>向量化 / 预分配 / 并行化决策</li>
+        <li>HPC 集群配置（Slurm/SGE/PBS）</li>
+      </ul>
+    </div>
+    <div style="font-size:0.8em;">
+      <p><strong>触发方式</strong></p>
+      <p>「这段代码跑得太慢了」</p>
+      <p>「如何在 HPC 上并行运行」</p>
+    </div>
+  </div>
+  <p class="fragment muted" style="font-size:0.7em; margin-top:0.5em;">包含 5 个参考文档：profiling、r-internals、future 生态、HPC 配置、常见模式</p>
+  <aside class="notes">这个skill内容最多，覆盖从本地优化到集群并行的完整链路。</aside>
+</section>
+
+<!-- Slide 28: 具体建议 -->
+<section>
+  <h2>给社科研究者的起步建议</h2>
+  <br>
+  <div class="fragment">
+    <h3>今天就可以做</h3>
+    <ul style="font-size:0.85em;">
+      <li>给你最重要的项目写一个 <code>AGENTS.md</code>，哪怕只有 10 行</li>
+      <li>把你最常犯的错误记录下来，写进 Known Pitfalls 部分</li>
+    </ul>
+  </div>
+  <br>
+  <div class="fragment">
+    <h3>这周可以做</h3>
+    <ul style="font-size:0.85em;">
+      <li>试一个支持 Agent 模式的 AI 工具（不限品牌）</li>
+      <li>把一个你常用的方法论决策树写成 Skill 格式</li>
+    </ul>
+  </div>
+  <br>
+  <div class="fragment">
+    <h3>这学期可以做</h3>
+    <ul style="font-size:0.85em;">
+      <li>搭建一个简单的 MCP 连接（比如让 AI 访问你的文献库）</li>
+      <li>逐步积累 Skills，形成自己的 AI 研究工具箱</li>
+    </ul>
+  </div>
+  <aside class="notes">给出可操作的建议，按时间维度分层。</aside>
+</section>
+
+<!-- Slide 29: 结尾 -->
+<section style="display:flex !important; flex-direction:column; justify-content:center; align-items:center; text-align:center !important;">
+  <h1 style="margin-bottom:0.2em;">谢谢！</h1>
+  <p class="muted" style="font-size:0.95em; margin-bottom:1.5em;">新年快乐 — 愿各位少写重复代码，多想有趣的问题。</p>
+  <p style="font-size:0.9em; margin-bottom:0.1em;">郑思尧</p>
+  <p style="font-size:0.75em;">
+    <a href="mailto:zhengsy24@sjtu.edu.cn" style="color:var(--accent)">zhengsy24@sjtu.edu.cn</a> ·
+    <a href="https://github.com/SiyaoZheng/" style="color:var(--accent)">github.com/SiyaoZheng</a>
+  </p>
+  <p class="muted" style="font-size:0.6em; margin-top:2em;">
+    参考资源：
+    <a href="https://agents.md" style="color:var(--accent)">AGENTS.md</a> ·
+    <a href="https://agentskills.io" style="color:var(--accent)">agentskills.io</a> ·
+    <a href="https://modelcontextprotocol.io" style="color:var(--accent)">modelcontextprotocol.io</a>
+  </p>
+  <aside class="notes">感谢听众，开放交流。</aside>
+</section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  width: 1200,
+  height: 700,
+  margin: 0.08,
+  transition: 'fade',
+  transitionSpeed: 'fast',
+  plugins: [RevealHighlight, RevealNotes]
+});
+
+// Beamer-style navigation bar logic
+(function() {
+  // Define sections: [name, startSlide, endSlide] (0-indexed)
+  const sections = [
+    { id: 'problem', start: 0, end: 2 },      // 问题：标题、2026年了、今天的主线
+    { id: 'foundation', start: 3, end: 8 },   // 基础：LLM直觉、工具生态、社科视角、三层次
+    { id: 'method', start: 9, end: 24 },      // 方法：Agent定义、AGENTS.md、Skills、MCP、整合
+    { id: 'practice', start: 25, end: 33 },   // 实践：案例、心法原则
+    { id: 'path', start: 34, end: 42 }        // 路径：五级路径、Skills发布、起步建议
+  ];
+
+  function getCurrentSection(slideIndex) {
+    for (const section of sections) {
+      if (slideIndex >= section.start && slideIndex <= section.end) {
+        return section;
+      }
+    }
+    return sections[0];
+  }
+
+  function updateProgressBar() {
+    const currentSlide = Reveal.getIndices().h;
+    const currentSection = getCurrentSection(currentSlide);
+
+    // Update section highlights
+    document.querySelectorAll('#progress-bar .nav-section').forEach(el => {
+      el.classList.toggle('active', el.dataset.section === currentSection.id);
+    });
+
+    // Update dots for current section
+    const dotsContainer = document.getElementById('section-dots');
+    const sectionLength = currentSection.end - currentSection.start + 1;
+    const posInSection = currentSlide - currentSection.start;
+
+    let dotsHtml = '';
+    for (let i = 0; i < sectionLength; i++) {
+      const isVisited = i < posInSection;
+      const isCurrent = i === posInSection;
+      dotsHtml += `<span class="dot${isVisited ? ' visited' : ''}${isCurrent ? ' current' : ''}"></span>`;
+    }
+    dotsContainer.innerHTML = dotsHtml;
+
+    // Update progress text
+    document.getElementById('progress-text').textContent =
+      `${posInSection + 1}/${sectionLength}`;
+  }
+
+  // Click navigation
+  document.querySelectorAll('#progress-bar .nav-section').forEach(el => {
+    el.addEventListener('click', () => {
+      const sectionId = el.dataset.section;
+      const section = sections.find(s => s.id === sectionId);
+      if (section) {
+        Reveal.slide(section.start);
+      }
+    });
+  });
+
+  // Update on slide change
+  Reveal.on('slidechanged', updateProgressBar);
+  Reveal.on('ready', updateProgressBar);
+})();
+</script>
+</body>
+</html>
